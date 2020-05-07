@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+    <title>Регистрация</title>
+    <link rel="icon" href="style/img/icon.png">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style/main.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+</head>
+<body>
+<div class="container-fluid body">
+    <div class="row page_top">
+        <span class="title">Осьметодичка. Регистрация</span>
+        <span class="right_part">Есть аккаунт? <input type="button" class="btn btn-info cornerbtn" value="Войти"></span>
+    </div>
+    <div class="row main">
+        <div class="col-2"></div>
+        <div class="col-8 autho">
+                    <span>
+                        <form action="/reg" method="post" id="form">
+                            <label id='name'>Имя пользователя</label><br>
+                            <input type='text', name='name' class="form-control username" required><br>
+                            <label id='password1'>Пароль</label><br>
+                            <input type='password', name='password1' class="form-control userpass" required><br>
+                            <label id='password2'>Повторите пароль</label><br>
+                            <input type='password', name='password2' class="form-control" required><br>
+                            <input type='submit', class='btn btn-info', value='Регистрация'>
+                        </form>
+                    </span>
+        </div>
+        <div class="col-2"></div>
+    </div>
+</div>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js'></script>
+<script>
+    $( ".cornerbtn").click(function() {
+        window.location.href = `/login`;
+    });
+    document.getElementById('form').addEventListener('submit', function() {
+        var pass = document.getElementsByClassName('userpass');
+        const regex = /^(?=.*[0-9])(?=.*[a-zA-Z])[a-zA-Z0-9]{6,16}/;
+        let ch = pass[0].value.match(regex);
+        if ((ch==null)||(ch[0] !== pass[0].value)) alert("Подберите пароль посложнее! Пароль должен содержать 6-16 символов, состоять из цифр и символов латинского алфавита. ");
+        else alert("Если введенные пароли совпадают и имя пользователя не занято, вы будете перенаправлены на страницу входа");
+    });
+</script>
+</body>
+</html>
