@@ -221,6 +221,6 @@ app.post('/undone', (req, res) => {
     let id = req.body.id;
     mongoClient.connect(url, async function (err, client) {
        await client.db("metodbase").collection("mero").findOneAndUpdate(
-            {"_id": ObjectId(id)}, {"status": "active"});
+            {"_id": ObjectId(id)}, {$set: {status: "active"}});
     });
 });
