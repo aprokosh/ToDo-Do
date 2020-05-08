@@ -6,7 +6,8 @@ function done (button) {
     qq += '<button type="button" onclick="del(this)" value="' + id + '" class="btn btn-warning mml">Удалить</button>';
     document.getElementById("done_marker").innerHTML = '<img class="mml" src="style/img/ok.png">';
     document.getElementById("isActive").className = "done";
-    document.getElementById("buttons_done").innerHTML = qq;
+    idname = "buttons_done" + id
+    document.getElementById(idname).innerHTML = qq;
 }
 
 function undone (button) {
@@ -17,7 +18,8 @@ function undone (button) {
     qq += '<button type="button" onclick="del(this)" value="' + id + '" class="btn btn-warning mml">Удалить</button>';
     document.getElementById("done_marker").innerHTML = '';
     document.getElementById("isActive").className = "active";
-    document.getElementById("buttons_done").innerHTML = qq;
+    dname = "buttons_done" + id
+    document.getElementById(idname).innerHTML = qq;
 }
 
 function del (button) {
@@ -53,13 +55,13 @@ function getTasks () {
             qq += '<div>' + tasks.data[i].description + '</div>';
             qq += '<div>' + parsing_date(tasks.data[i].deadline) + '</div>';
             if (tasks.data[i].status === "done") {
-                qq += '<div id="buttons_done">'
+                qq += '<div id="buttons_done'  + id + '">'
                 qq += '<button type="button" onclick="undone(this)" value="' + this_id + '" class="btn btn-warning">Отменить выполнение</button>';
                 qq += '<button type="button" onclick="del(this)" value="' + this_id + '" class="btn btn-warning mml">Удалить</button>';
                 qq += '</div>'
             }
             else {
-                qq += '<div id="buttons_done">'
+                qq += '<div id="buttons_done'  + id + '">'
                 qq += '<button type="button" onclick="done(this)" value="' + this_id + '" class="btn btn-warning">Выполнено</button>';
                 qq += '<button type="button" onclick="del(this)" value="' + this_id + '" class="btn btn-warning mml">Удалить</button>';
                 qq += '</div>'
@@ -93,7 +95,7 @@ function parsing_date(date_){
     if ((parsed.getMonth()+1) <10){
         q = '0'+parsed.getMonth()+1
     }
-    else q = parsed.getMonth()+1 
+    else q = parsed.getMonth()+1
     var date   =  parsed.getDate() + '.' + q + '.' + parsed.getFullYear();
     return date
 }
