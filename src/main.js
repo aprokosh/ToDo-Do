@@ -4,8 +4,10 @@ function done (button) {
     qq = "";
     qq += '<button type="button" onclick="undone(this)" value="' + id + '" class="btn btn-warning">Отменить выполнение</button>';
     qq += '<button type="button" onclick="del(this)" value="' + id + '" class="btn btn-warning mml">Удалить</button>';
-    document.getElementById("done_marker").innerHTML = '<img class="mml" src="style/img/ok.png">';
-    document.getElementById("isActive").className = "done";
+    markername = "done_marker" + id;
+    document.getElementById(markername).innerHTML = '<img class="mml" src="style/img/ok.png">';
+    activename = "isActive" + id;
+    document.getElementById(activename).className = "done";
     idname = "buttons_done" + id
     document.getElementById(idname).innerHTML = qq;
 }
@@ -16,9 +18,11 @@ function undone (button) {
     qq = "";
     qq += '<button type="button" onclick="done(this)" value="' + id + '" class="btn btn-warning">Выполнено</button>';
     qq += '<button type="button" onclick="del(this)" value="' + id + '" class="btn btn-warning mml">Удалить</button>';
-    document.getElementById("done_marker").innerHTML = '';
-    document.getElementById("isActive").className = "active";
-    dname = "buttons_done" + id
+    markername = "done_marker" + id;
+    document.getElementById(markername).innerHTML = '';
+    activename = "isActive" + id;
+    document.getElementById(activename).className = "active";
+    idname = "buttons_done" + id;
     document.getElementById(idname).innerHTML = qq;
 }
 
@@ -43,25 +47,25 @@ function getTasks () {
             let this_id = tasks.data[i].id;
             qq += '<div id="accord' + this_id + '" class="accord">';
             if (tasks.data[i].status === "done"){
-                qq += '<h3 id="isActive" class="done">'
+                qq += '<h3 id="isActive'  + this_id + '" class="done">'
             }
             else {
-                qq+= '<h3 id="isActive" class="active">'
+                qq+= '<h3 id="isActive'  + this_id + '" class="active">'
             }
             qq += '<span id="' + this_id + '"><span>' + tasks.data[i].name + '</span>'
-            if (tasks.data[i].status === "done") qq += '<span id="done_marker"><img class="mml" src="style/img/ok.png"></span>'
+            if (tasks.data[i].status === "done") qq += '<span id="done_marker'  + this_id + '"><img class="mml" src="style/img/ok.png"></span>'
             qq += '</span></h3>';
             qq += '<block>';
             qq += '<div>' + tasks.data[i].description + '</div>';
             qq += '<div>' + parsing_date(tasks.data[i].deadline) + '</div>';
             if (tasks.data[i].status === "done") {
-                qq += '<div id="buttons_done'  + id + '">'
+                qq += '<div id="buttons_done'  + this_id + '">';
                 qq += '<button type="button" onclick="undone(this)" value="' + this_id + '" class="btn btn-warning">Отменить выполнение</button>';
                 qq += '<button type="button" onclick="del(this)" value="' + this_id + '" class="btn btn-warning mml">Удалить</button>';
                 qq += '</div>'
             }
             else {
-                qq += '<div id="buttons_done'  + id + '">'
+                qq += '<div id="buttons_done'  + this_id + '">';
                 qq += '<button type="button" onclick="done(this)" value="' + this_id + '" class="btn btn-warning">Выполнено</button>';
                 qq += '<button type="button" onclick="del(this)" value="' + this_id + '" class="btn btn-warning mml">Удалить</button>';
                 qq += '</div>'
