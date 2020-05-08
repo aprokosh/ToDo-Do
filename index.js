@@ -72,7 +72,7 @@ app.post("/login", urlencodedParser, function (req, res) {
                 if (Crypto.SHA256(req.body.password).toString() === result.password) {
                     req.session.authorized = true;
                     req.session.username = req.body.login;
-                    res.redirect('/menu');
+                    res.redirect('/tasks');
                 }
                 else {
                     console.log('Неверный пароль');
@@ -90,13 +90,11 @@ app.post("/login", urlencodedParser, function (req, res) {
 app.get('/logout', (req, res) => {
     delete req.session.authorized;
     delete req.session.username;
-    mongoClient.connect(url, function (err, client) {
-        client.db("tododo").collection("tasks").delete({"author": "deleted_task__"})
-    });
     res.redirect('/')
 });
 
 app.get('/', (req, res) => {
+   // if (req.session.authorized) {res.sendFile(__dirname + '/main.html')}
     res.sendFile(__dirname + '/autho.html')
 });
 
@@ -123,6 +121,8 @@ find_task_by_id = function(id) {
         mongoClient.connect(url, async function (err, client) {
             await client.db("tododo").collection("tasks").findOne({"_id": ObjectId(id)}).then((res) => {
                 resolve(res);
+                console.log("and now res is ")
+                console.log(res)
             });
         });
     });
@@ -132,6 +132,8 @@ get_task_id = function(name, author) {
     return new Promise(function (resolve, reject) {
         mongoClient.connect(url, async function (err, client) {
             await client.db("tododo").collection("tasks").findOne({"name": name, "author": author}).then((res) => {
+                console.log("result id is ")
+                console.log(res._id)
                 resolve(res._id);
             });
         });
@@ -142,17 +144,28 @@ app.post("/add", urlencodedParser, function (req, res) {
     mongoClient.connect(url, function (err, client) {
         client.db("tododo").collection("tasks").insertOne({
             name: req.body.name,
-            description: req.body.desc,
-            deadline: req.body.date,
+            description: req.body.description,
+            deadline: req.body.deadline,
             author: req.session.username,
             status: "active"
         })
     });
-    new_id = get_task_id(req.body.name, req.session.username);
-    mongoClient.connect(url, function (err, client) {
-        client.db("tododo").collection("users").findOneAndUpdate(
-            { "login" : req.session.username},{$addToSet: { fav: new_id}})
-    });
+
+    async function add_to_list(callback) {
+        new_id = await get_task_id(req.body.name, req.session.username);
+        console.log("this function is add_to_list and it returned ", new_id)
+        callback(new_id)
+    }
+
+    function find_(some_id) {
+        mongoClient.connect(url, function (err, client) {
+            client.db("tododo").collection("users").findOneAndUpdate(
+                {"login": req.session.username}, {$addToSet: {tasks: some_id}})
+        });
+    }
+
+    add_to_list(find_)
+
     res.redirect('/tasks')
 });
 
@@ -174,7 +187,7 @@ app.get('/gettasks', (req, res) => {
                         name: res.name,
                         deadline: res.deadline,
                         description: res.description,
-                        status: "active"
+                        status: res.status
                     });
                 });
             }
@@ -190,32 +203,24 @@ app.post('/delete', (req, res) => {
     let id = req.body.id;
     mongoClient.connect(url, function (err, client) {
         client.db("tododo").collection("users").findOneAndUpdate(
-            { "login" : req.session.username},{$pull: { fav: ObjectId(id)}})
-        client.db("tododo").collection("tasks").findOneAndUpdate(
-            { "_id" : ObjectId(id)},{"author": "deleted_task__"})
-    });
-});
-
-app.post('/undelete', (req, res) => {
-    let id = req.body.id;
-    mongoClient.connect(url, function (err, client) {
-        client.db("tododo").collection("users").findOneAndUpdate(
-            { "login" : req.session.username},{$addToSet: { tasks: ObjectId(id)}})
-        client.db("tododo").collection("tasks").findOneAndUpdate(
-            { "_id" : ObjectId(id)},{"author": req.session.username})
+            { "login" : req.session.username},{$pull: { tasks: ObjectId(id)}});
+        client.db("tododo").collection("tasks").deleteOne({"_id": ObjectId(id)});
     });
 });
 
 app.post('/done', (req, res) => {
     let id = req.body.id;
-    mongoClient.connect(url, function (err, client) {
-        client.db("tododo").collection("tasks").findOneAndUpdate(
-            { "_id" : ObjectId(id)},{"status": "done"});
+    mongoClient.connect(url, async function (err, client) {
+        await client.db("tododo").collection("tasks").findOneAndUpdate(
+            {"_id": ObjectId(id)}, {$set :{status: "done"}});
+        console.log("was done")
+    });
 });
 
 app.post('/undone', (req, res) => {
     let id = req.body.id;
-    mongoClient.connect(url, function (err, client) {
-        client.db("metodbase").collection("mero").findOneAndUpdate(
-            { "_id" : ObjectId(id)},{"status": "active"});
+    mongoClient.connect(url, async function (err, client) {
+       await client.db("metodbase").collection("mero").findOneAndUpdate(
+            {"_id": ObjectId(id)}, {"status": "active"});
+    });
 });

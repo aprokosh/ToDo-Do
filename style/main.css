@@ -1,9 +1,9 @@
-@import url('https://fonts.googleapis.com/css?family=Amatic+SC');
+@import url('https://fonts.googleapis.com/css2?family=Neucha&display=swap');
 
 .body{
-    font-family: Amatic SC;
+    font-family: 'Neucha', cursive;
     font-size: 25px;
-    background-color: #ebf8f9;
+    background-color: #fffaf0;
 }
 
 .main{
@@ -12,14 +12,15 @@
 }
 
 .page_top {
-    height: 50px;
-    background-color: #59c8cd;
+    height: 70px;
+    background-color: orange;
     border-bottom: 1px solid #a5a5a5;
+    color: white;
 }
 .title{
     position: absolute;
     left: 7%;
-    font-size: 35px;
+    font-size: 40px;
     color: white;
 }
 .right_part{
@@ -31,14 +32,44 @@
 .cornerbtn{
     margin-left: 15px;
 }
-option{
-    font-size: 25px;
-}
 
-.push{
-    margin-top: 15px;
-}
 
 h1{
     text-align: center;
+}
+
+.done{
+    background-color: #ffdead;
+}
+
+h3{
+    width: 100%;
+    background-color: orange;
+    color: white;
+    font-size: 25px;
+    padding: 10px;
+    padding-right: 400px;
+    border-radius: 2px;
+}
+
+.done{
+    background-color: #ffdead;
+}
+
+block{
+    display: none;
+    background-color: #fff5ee;
+    padding: 10px;
+}
+
+input{
+    margin: 10px;
+}
+
+form{
+    width: 90%;
+}
+
+.mml{
+    margin-left: 15px;
 }
