@@ -38,6 +38,7 @@ describe('/gettasks', () => {
     });
 });
 
+setTimeout(process.exit, 15000)
 
 //postRegist, postLogin, getLogout, getMain, getLogin,
 // getRegist, getTasksPage, find_task_by_id, get_task_id,
