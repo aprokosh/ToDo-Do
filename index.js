@@ -17,6 +17,8 @@ app.listen(process.env.PORT ||port, () => {
     console.log(`Listening on port ${port}`)
 })
 
+module.exports = app
+
 const mongoClient = require("mongodb").MongoClient;
 //const url = "mongodb://localhost:27017/";
 const url = process.env.MONGODB_URI || "mongodb://tododo:ToDoDo1st@ds135036.mlab.com:35036/tododo";
@@ -40,7 +42,7 @@ check_regex = function (regex, string){
     else return true;
 }
 
-app.post("/reg", urlencodedParser, function (req, res) {
+function postRegist (req, res) {
     const regex = /^(?=.*[0-9])(?=.*[a-zA-Z])[a-zA-Z0-9]{6,16}/;
     let check = check_regex(regex, req.body.password1)
     mongoClient.connect(url, function (err, client) {
@@ -63,9 +65,11 @@ app.post("/reg", urlencodedParser, function (req, res) {
             }
         });
     });
-});
+};
+app.post("/reg", urlencodedParser, postRegist);
 
-app.post("/login", urlencodedParser, function (req, res) {
+
+function postLogin (req, res) {
     mongoClient.connect(url, function (err, client) {
         client.db("tododo").collection("users").findOne({login: req.body.login}, function(err,result){
             if (result) {
@@ -85,34 +89,46 @@ app.post("/login", urlencodedParser, function (req, res) {
             }
         });
     });
-});
+};
+app.post("/login", urlencodedParser, postLogin)
 
-app.get('/logout', (req, res) => {
+
+function getLogout (req, res) {
     delete req.session.authorized;
     delete req.session.username;
     res.redirect('/')
-});
+};
+app.get('/logout', getLogout);
 
-app.get('/', (req, res) => {
-   // if (req.session.authorized) {res.sendFile(__dirname + '/main.html')}
+
+function getMain (req, res) {
+    // if (req.session.authorized) {res.sendFile(__dirname + '/main.html')}
     res.sendFile(__dirname + '/autho.html')
-});
+};
+app.get('/', getMain);
 
-app.get('/login', (req, res) => {
+
+function getLogin (req, res) {
     res.sendFile(__dirname + '/autho.html')
-});
+};
+app.get('/login', getLogin);
 
-app.get('/regist', (req, res) => {
+
+function getRegist (req, res) {
     res.sendFile(__dirname + '/regist.html')
-});
+};
+app.get('/regist', getRegist)
 
-app.get('/tasks', (req, res) => {
+
+function getTasksPage (req, res) {
     if (req.session.authorized) {
         res.sendFile(__dirname + '/main.html')
     }
     else
         res.redirect('/')
-});
+};
+app.get('/tasks', getTasksPage)
+
 
 //some functions
 
@@ -140,7 +156,7 @@ get_task_id = function(name, author) {
     });
 }
 
-app.post("/add", urlencodedParser, function (req, res) {
+function postAdd (req, res) {
     mongoClient.connect(url, function (err, client) {
         client.db("tododo").collection("tasks").insertOne({
             name: req.body.name,
@@ -167,19 +183,25 @@ app.post("/add", urlencodedParser, function (req, res) {
     add_to_list(find_)
 
     res.redirect('/tasks')
-});
+};
+app.post("/add", urlencodedParser, postAdd);
 
 
-app.get('/getusername', (req, res) => {
+function getUsername(req, res) {
     res.send(req.session.username);
-});
+};
+app.get('/getusername', getUsername)
+
 
 ObjectId = require("mongodb").ObjectID;
 
-app.get('/gettasks', (req, res) => {
+function getTasks(req, res){
+    if (req.session.authorized)
+        username = req.session.username
+    else username = "ann"
     let tsks = [];
     mongoClient.connect(url, async function (err, client) {
-        client.db("tododo").collection("users").findOne({login: req.session.username}, async function (err, result) {
+        client.db("tododo").collection("users").findOne({login: username}, async function (err, result) {
             for (var i = 0; i < result.tasks.length; ++i) {
                 find_task_by_id(result.tasks[i]).then(function(res) {
                     tsks.push({
@@ -197,30 +219,39 @@ app.get('/gettasks', (req, res) => {
             }, 3000);
         });
     });
-});
+};
+app.get('/gettasks', getTasks);
 
-app.post('/delete', (req, res) => {
+
+function postDelete(req, res) {
     let id = req.body.id;
     mongoClient.connect(url, function (err, client) {
         client.db("tododo").collection("users").findOneAndUpdate(
             { "login" : req.session.username},{$pull: { tasks: ObjectId(id)}});
         client.db("tododo").collection("tasks").deleteOne({"_id": ObjectId(id)});
     });
-});
+};
+app.post('/delete', postDelete);
 
-app.post('/done', (req, res) => {
+
+function postDone (req, res) {
     let id = req.body.id;
     mongoClient.connect(url, async function (err, client) {
         await client.db("tododo").collection("tasks").findOneAndUpdate(
             {"_id": ObjectId(id)}, {$set :{status: "done"}});
         console.log("was done")
     });
-});
+};
+app.post('/done', postDone);
 
-app.post('/undone', (req, res) => {
+
+function postUndone(req, res) {
     let id = req.body.id;
     mongoClient.connect(url, async function (err, client) {
        await client.db("metodbase").collection("mero").findOneAndUpdate(
             {"_id": ObjectId(id)}, {$set: {status: "active"}});
     });
-});
+};
+app.post('/undone', postUndone);
+
+module.exports = { postRegist, postLogin, getLogout, getMain, getLogin, getRegist, getTasksPage, find_task_by_id, get_task_id, postAdd, getUsername, getTasks, postDelete, postDone, postUndone };
