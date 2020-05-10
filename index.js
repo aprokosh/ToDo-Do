@@ -238,9 +238,9 @@ function postDelete(req, res) {
 app.post('/delete', postDelete);
 
 
-function postDone (req, res) {
+async function postDone (req, res) {
     let id = req.body.id;
-    mongoClient.connect(url, async function (err, client) {
+    await mongoClient.connect(url, async function (err, client) {
         await client.db("tododo").collection("tasks").findOneAndUpdate(
             {"_id": ObjectId(id)}, {$set :{status: "done"}});
         console.log("was done")
@@ -249,11 +249,12 @@ function postDone (req, res) {
 app.post('/done', postDone);
 
 
-function postUndone(req, res) {
+async function postUndone(req, res) {
     let id = req.body.id;
-    mongoClient.connect(url, async function (err, client) {
-       await client.db("metodbase").collection("mero").findOneAndUpdate(
+    await mongoClient.connect(url, async function (err, client) {
+       await client.db("tododo").collection("tasks").findOneAndUpdate(
             {"_id": ObjectId(id)}, {$set: {status: "active"}});
+       console.log('was undone')
     });
 };
 app.post('/undone', postUndone);
