@@ -49,11 +49,15 @@ function getTasks () {
             if (tasks.data[i].status === "done"){
                 qq += '<h3 id="isActive'  + this_id + '" class="done">'
             }
+            else if (tasks.data[i].deadline < today){
+                qq+= '<h3 id="isActive'  + this_id + '" class="dued">'
+            }
             else {
                 qq+= '<h3 id="isActive'  + this_id + '" class="active">'
             }
             qq += '<span id="' + this_id + '"><span>' + tasks.data[i].name + '</span>'
             if (tasks.data[i].status === "done") qq += '<span id="done_marker'  + this_id + '"><img class="mml" src="style/img/ok.png"></span>'
+            else if (tasks.data[i].deadline < today) qq += '<span id="done_marker'  + this_id + '"><img class="mml" src="style/img/no.png"></span>'
             qq += '</span></h3>';
             qq += '<block>';
             qq += '<div>' + tasks.data[i].description + '</div>';
@@ -109,5 +113,20 @@ function parsing_date(date_){
     return date
 }
 
+var yesterday = new Date(new Date().setDate(new Date().getDate()-1));
+
+var today = new Date();
+var dd = today.getDate();
+var mm = today.getMonth()+1;
+var yyyy = today.getFullYear();
+if(dd<10){
+    dd='0'+dd
+}
+if(mm<10){
+    mm='0'+mm
+}
+
+today = yyyy+'-'+mm+'-'+dd;
+document.getElementById("datefield").setAttribute("min", today);
 
 getTasks();
