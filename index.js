@@ -145,8 +145,8 @@ find_task_by_id = function(id) {
 }
 
 get_task_id = function(name, author) {
-    return new Promise(function (resolve, reject) {
-        mongoClient.connect(url, async function (err, client) {
+    return new Promise(async function (resolve, reject) {
+        await mongoClient.connect(url, async function (err, client) {
             await client.db("tododo").collection("tasks").findOne({"name": name, "author": author}).then((res) => {
                 console.log(res)
                 console.log("result id is ")
@@ -157,8 +157,8 @@ get_task_id = function(name, author) {
     });
 }
 
-function postAdd (req, res) {
-    async function addTask(callback) {
+async function postAdd (req, res) {
+    async function addTask() {
         await mongoClient.connect(url, async function (err, client) {
             await client.db("tododo").collection("tasks").insertOne({
                 name: req.body.name,
@@ -168,22 +168,23 @@ function postAdd (req, res) {
                 status: "active"
             })
         });
-        return callback();
+        await add_to_list()
     }
     async function add_to_list(callback) {
         new_id = await get_task_id(req.body.name, req.session.username);
         console.log("this function is add_to_list and it returned ", new_id)
-        callback(new_id)
+        await find_(new_id)
     }
 
-    function find_(some_id) {
-        mongoClient.connect(url, function (err, client) {
-            client.db("tododo").collection("users").findOneAndUpdate(
+    async function find_(some_id) {
+        await mongoClient.connect(url, async function (err, client) {
+            await client.db("tododo").collection("users").findOneAndUpdate(
                 {"login": req.session.username}, {$addToSet: {tasks: some_id}})
+            console.log("added ", some_id)
         });
     }
 
-    addTask(add_to_list(find_))
+    await addTask()
     res.redirect('/tasks')
 };
 app.post("/add", urlencodedParser, postAdd);
@@ -205,6 +206,7 @@ function getTasks(req, res){
     mongoClient.connect(url, async function (err, client) {
         client.db("tododo").collection("users").findOne({login: username}, async function (err, result) {
             for (var i = 0; i < result.tasks.length; ++i) {
+                console.log("res.tasks: ", result.tasks)
                 find_task_by_id(result.tasks[i]).then(function(res) {
                     tsks.push({
                         id: res._id,
