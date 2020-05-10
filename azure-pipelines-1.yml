@@ -15,6 +15,12 @@ steps:
     versionSpec: '10.x'
   displayName: 'Install Node.js'
 
+- task: PublishCodeCoverageResults@1
+  inputs:
+    codeCoverageTool: 'JaCoCo'
+    summaryFileLocation: 'coverage_results.xml'
+
+
 - script: |
     npm test
   displayName: 'mocha npm tests'
