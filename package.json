@@ -4,10 +4,11 @@
   "engines": {
     "node": "10.14.2"
   },
-  "main": "actualindex.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node actualindex.js",
-    "test": "mocha --timeout 10000"
+    "start": "node index.js",
+    "test": "nyc --reporter=html --reporter=text mocha --timeout 10000",
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "author": "",
   "license": "ISC",
@@ -27,18 +28,24 @@
     "express-session": "^1.15.6",
     "flash": "^1.1.0",
     "helmet": "^3.15.0",
+    "jasmine": "^3.5.0",
+    "mocha-sinon": "^2.1.2",
     "mongodb": "^3.1.9",
     "mongoose": "^5.3.13",
+    "nyc": "^15.0.1",
     "passport": "^0.4.0",
     "passport-auth0": "^1.1.0",
     "passport-local": "^1.0.0",
     "pusher": "^2.2.0",
     "req-flash": "0.0.3",
-    "session-file-store": "^1.2.0"
+    "session-file-store": "^1.2.0",
+    "sinon": "^9.0.2",
+    "sinon-chai": "^3.5.0"
   },
   "devDependencies": {
     "chai": "^4.2.0",
     "chromedriver": "^2.45.0",
+    "coveralls": "^3.1.0",
     "dotenv": "^6.2.0",
     "mocha": "^5.2.0",
     "nightwatch": "^1.0.16"

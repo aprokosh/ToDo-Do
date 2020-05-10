@@ -80,12 +80,12 @@ function postLogin (req, res) {
                 }
                 else {
                     console.log('Неверный пароль');
-                    res.redirect('/')
+                    res.redirect(301, '/')
                 }
             }
             else {
                 console.log('Пользователя с таким именем не существует');
-                res.redirect('/')
+                res.redirect(301, '/')
             }
         });
     });

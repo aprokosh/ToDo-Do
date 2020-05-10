@@ -4,6 +4,11 @@ let chaiHttp = require('chai-http');
 let app = require('../index.js');
 let should = chai.should();
 chai.use(chaiHttp);
+var expect = require('chai').expect;
+var sinonChai = require('sinon-chai');
+var sinon = require('sinon');
+
+chai.use(sinonChai);
 
 var assert = require('assert');
 describe("get_task_id", async function() {
@@ -25,6 +30,57 @@ describe('/', () => {
     });
 });
 
+describe('/POST method registration', () => {
+    beforeEach(function() {
+        sinon.spy(console, 'log');
+    });
+
+    afterEach(function() {
+        console.log.restore();
+    });
+
+    it('it should call console log', (done) => {
+        let user = {
+            login: "ann",
+            password1: "123first",
+            password2: "456wrong"
+        }
+        chai.request('http://localhost:3000')
+            .post('/reg')
+            .send(user)
+            .end((err, res) => {
+                expect(console.log).to.be.called;
+                done();
+            });
+    });
+});
+
+describe('/POST method login', () => {
+    beforeEach(function() {
+        sinon.spy(console, 'log');
+    });
+
+    afterEach(function() {
+        console.log.restore();
+    });
+
+    it('it should call console', (done) => {
+        let user = {
+            login: "someuser",
+            password: "123",
+        }
+        chai.request('http://localhost:3000')
+            .post('/login')
+            .send(user)
+            .end((err, res) => {
+                expect(console.log).to.be.called;
+                done();
+            });
+    });
+});
+
+
+
 
 describe('/gettasks', () => {
     it('should return Object(data)', (done) => {
@@ -41,7 +97,7 @@ describe('/gettasks', () => {
 setTimeout(process.exit, 15000)
 
 //postRegist, postLogin, getLogout, getMain, getLogin,
-// getRegist, getTasksPage, find_task_by_id, get_task_id,
-// postAdd, getUsername, getTasks, postDelete, postDone, postUndone };
+// getRegist, getTasksPage, find_task_by_id
+// postAdd};
 
 //done - get_task_id
