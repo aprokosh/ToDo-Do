@@ -148,6 +148,7 @@ get_task_id = function(name, author) {
     return new Promise(function (resolve, reject) {
         mongoClient.connect(url, async function (err, client) {
             await client.db("tododo").collection("tasks").findOne({"name": name, "author": author}).then((res) => {
+                console.log(res)
                 console.log("result id is ")
                 console.log(res._id)
                 resolve(res._id);
@@ -157,16 +158,18 @@ get_task_id = function(name, author) {
 }
 
 function postAdd (req, res) {
-    mongoClient.connect(url, function (err, client) {
-        client.db("tododo").collection("tasks").insertOne({
-            name: req.body.name,
-            description: req.body.description,
-            deadline: req.body.deadline,
-            author: req.session.username,
-            status: "active"
-        })
-    });
-
+    async function addTask(callback) {
+        await mongoClient.connect(url, async function (err, client) {
+            await client.db("tododo").collection("tasks").insertOne({
+                name: req.body.name,
+                description: req.body.description,
+                deadline: req.body.deadline,
+                author: req.session.username,
+                status: "active"
+            })
+        });
+        return callback();
+    }
     async function add_to_list(callback) {
         new_id = await get_task_id(req.body.name, req.session.username);
         console.log("this function is add_to_list and it returned ", new_id)
@@ -180,8 +183,7 @@ function postAdd (req, res) {
         });
     }
 
-    add_to_list(find_)
-
+    addTask(add_to_list(find_))
     res.redirect('/tasks')
 };
 app.post("/add", urlencodedParser, postAdd);

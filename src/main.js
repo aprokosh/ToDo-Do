@@ -76,21 +76,22 @@ function getTasks () {
         document.getElementById('result').innerHTML = qq;
         $('.accord h3').on('click', function (e) {
             if (!$(this).parent().find('block').is(':visible')) {
-                $(this).parent().find('block').show(200)
+                $(this).parent().find('block').show(350)
             } else {
-                $(this).parent().find('block').hide(200)
+                $(this).parent().find('block').hide(350)
             }
         });
     }
     xhr.send()
 };
-
-$('.accord h3').click( function (e) {
-    if (!$(this).parent().find('block').is(':visible')) {
-        $(this).parent().find('block').show(200)
-    } else {
-        $(this).parent().find('block').hide(200)
-    }
+$(document).ready(function() {
+    $('.accord1 h3').on('click', function (e) {
+        if ($(this).parent().find('block').is(':visible')) {
+            $(this).parent().find('block').hide(350)
+        } else {
+            $(this).parent().find('block').show(350)
+        }
+    });
 });
 
 function parsing_date(date_){
